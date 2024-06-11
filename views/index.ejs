@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+  </head>
+  <body>
+    <form id="fields">
+      <div>
+        <% ref_cols.forEach(col => { %>
+        <div class="col">
+          <label for="<%= col %>"><%= col %></label>
+          <input
+            type="text"
+            name="<%= col %>"
+            id="<%= col %>"
+            placeholder="Enter <%= col %>"
+          />
+        </div>
+        <% }) %>
+      </div>
+      <div class="submit"><button type="submit">Send</button></div>
+    </form>
+
+    <div id="prediction_res">Median House Value = <span></span></div>
+
+    <style>
+      #fields > div {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 16px;
+      }
+
+      .col {
+        display: flex;
+        margin: 20px 0;
+      }
+
+      .col label {
+        padding: 6px 10px;
+        background: #ccc;
+        border-radius: 10px 0 0 10px;
+        border: 1px solid #000;
+        cursor: pointer;
+      }
+
+      .col label::first-letter {
+        text-transform: uppercase;
+      }
+
+      .col input {
+        padding-left: 10px;
+        outline: none;
+        border-radius: 0 10px 10px 0;
+        border: 1px solid #000;
+        font-size: 18px;
+      }
+
+      form button {
+        padding: 10px 40px;
+        font-size: 20px;
+        cursor: pointer;
+      }
+
+      form .submit {
+        display: flex;
+        justify-content: center;
+      }
+    </style>
+
+    <script
+      src="https://code.jquery.com/jquery-3.7.1.min.js"
+      integrity="sha256-/JqT3SQfawRcv/BIHPThkBvs0OEvtFFmqPF/lYI/Cxo="
+      crossorigin="anonymous"
+    ></script>
+    <script>
+      const prediction_res = $("#prediction_res");
+      const form = $("form")[0];
+      form.onsubmit = (e) => {
+        e.preventDefault();
+
+        const formData = new FormData(form);
+
+        let formm = {};
+
+        formData.keys().forEach((k) => {
+          formm[k] = formData.get(k);
+        });
+
+        fetch("http://localhost:3000", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(formm),
+        })
+          .then((response) => response.json())
+          .then((data) => {
+            console.log(data, "fasdf");
+            prediction_res.children("span")[0].textContent = data;
+          })
+          .catch((err) => {
+            console.log(err);
+          });
+      };
+    </script>
+  </body>
+</html>
